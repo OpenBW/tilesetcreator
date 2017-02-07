@@ -39,7 +39,6 @@ public class MapCanvas extends Canvas {
 			int index = tiles[i] >> 4;
 			int subIndex = tiles[i] & 0xf;
 			Tile tile = tileset.indexToTile(index, subIndex);
-			
 			if (tile != null) {
 				Image foreground = tileset.getTexture(tile.getForegroundTextureId());
 				if (tile.getMaskId() == 0) {

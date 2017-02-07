@@ -1,6 +1,11 @@
 package org.openbw.mapeditor.gui;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import org.openbw.mapeditor.data.MapReader;
 import org.openbw.mapeditor.data.Tileset;
@@ -50,6 +55,8 @@ public class MainWindow extends Application {
 //			{64, 32, 32, 0}
 //	};
 	
+	private Properties properties;
+	
 	private Tileset tileset;
 	private TransitionPreview transitionPreview;
 	
@@ -62,10 +69,44 @@ public class MainWindow extends Application {
 		return primaryStage;
 	}
 	
+	private void readProperties() {
+		
+		properties = new Properties();
+		InputStream input = null;
+
+		try {
+			input = new FileInputStream("config.properties");
+		} catch (FileNotFoundException e1) {
+			System.out.println("Could not find property file - creating one...");
+			try {
+				FileOutputStream output = new FileOutputStream("config.properties");
+				input = new FileInputStream("config.properties");
+			} catch (FileNotFoundException e) {
+				System.out.println("Could not create property file.");
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			properties.load(input);
+			String scdir = properties.getProperty("scdir");
+			
+			if (scdir == null) {
+				
+			}
+			
+			input.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		
-		this.tileset = new Tileset();
+		readProperties();
+		this.tileset = new Tileset(properties.getProperty("scdir"));
 		this.transitionPreview = new TransitionPreview();
 		
 		this.primaryStage = primaryStage;

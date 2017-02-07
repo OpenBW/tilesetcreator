@@ -24,6 +24,7 @@ public class TransitionPreview extends Notifier {
 	
 	public void init(Image from, Image to, TransitionAlgorithm algorithm) {
 		
+		System.out.println("initializing preview with images " + from + " and " + to);
 		this.from = from;
 		this.to = to;
 		this.algorithm = algorithm;

@@ -12,8 +12,8 @@ public class MapReader {
 
 		int[] tiles = new int[128 * 128];
 
-		MPQReader mpqReader = new MPQReader();
-		ByteBuffer buffer = mpqReader.extractMpqFile("staredit\\scenario.chk", "fighting_spirit.scx");
+		MPQReader mpqReader = new MPQReader(null);
+		ByteBuffer buffer = mpqReader.extractMpqFile("staredit\\scenario.chk", "test_map.scx");
 
 		String sectionName = "";
 		int sectionLength = 0;

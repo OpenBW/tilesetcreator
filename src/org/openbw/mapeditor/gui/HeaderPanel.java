@@ -17,6 +17,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -40,7 +45,9 @@ public class HeaderPanel extends VBox {
 		
 		Button button = new Button();
 		button.setTooltip(new Tooltip(Tileset.TEXTURE_NAMES[index]));
-		button.setStyle("-fx-background-image: url('" + url + "');");
+		BackgroundImage backgroundImage = new BackgroundImage( tileset.getTexture(index), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        Background background = new Background(backgroundImage);
+        button.setBackground(background);
 		button.setPrefSize(64, 64);
 		
 		button.setOnAction(new EventHandler<ActionEvent>() {
@@ -145,4 +152,5 @@ public class HeaderPanel extends VBox {
 		
 		return textureBar;
 	}
+
 }

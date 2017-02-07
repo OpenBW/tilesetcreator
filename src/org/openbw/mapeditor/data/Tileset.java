@@ -1,12 +1,16 @@
 package org.openbw.mapeditor.data;
 
+import java.io.IOException;
+
 import javafx.scene.image.Image;
+import mpq.MPQException;
 
 public class Tileset {
 
 	public static final int NUMBER_OF_TEXTURES = 14;
 	public static String[] TEXTURE_NAMES = {"low-ground empty", "low-ground primary", "low-ground secondary", "low-ground tertiary", "low-ground primary non-buildable", "low-ground secondary non-buildable", "low-ground / primary elevated", "low-ground / primary elevated high", "high-ground / primary", "high-ground / secondary", "high-ground / primary non-buildable", "high-ground / primary elevated", "high-ground / primary elevated high", "creep"};
-
+	
+	private Image complete;
 	private Image[] textures;
 	
 	private static final int[][] masks = new int[][] {
@@ -57,14 +61,14 @@ public class Tileset {
 			{15, 4, 4, 0},
 			{16, 7, 7, 0},
 			{17, 7, 7, 0},
-			{18, 1, 1, 0},
-			{19, 1, 1, 0},
-			{20, 4, 4, 0},
-			{21, 4, 4, 0},
-			{22, 6, 6, 0},
-			{23, 6, 6, 0},
-			{24, 7, 7, 0},
-			{25, 7, 7, 0},
+			{18, 8, 8, 0},
+			{19, 8, 8, 0},
+			{20, 10, 10, 0},
+			{21, 10, 10, 0},
+			{22, 11, 11, 0},
+			{23, 11, 11, 0},
+			{24, 12, 12, 0},
+			{25, 12, 12, 0},
 			{26, 3, 3, 0},
 			{27, 3, 3, 0},
 			{28, 2, 2, 0},
@@ -235,22 +239,22 @@ public class Tileset {
 			{193, 1, 3, 0},
 			{194, 1, 3, 7},
 			{195, 1, 3, 3},
-			{196, 9, 9, 0},
-			{197, 1, 9, 16},
-			{198, 9, 9, 0},
-			{199, 1, 9, 15},
-			{200, 1, 9, 6},
-			{201, 9, 9, 0},
-			{202, 1, 9, 8},
-			{203, 9, 9, 0},
+			{196, 3, 3, 0},
+			{197, 1, 3, 16},
+			{198, 3, 3, 0},
+			{199, 1, 3, 15},
+			{200, 1, 3, 6},
+			{201, 3, 3, 0},
+			{202, 1, 3, 8},
+			{203, 3, 3, 0},
 			{204, -1, -1, -1},
 			{205, -1, -1, -1},
 			{206, -1, -1, -1},
 			{207, -1, -1, -1},
-			{208, 1, 9, 14},
-			{209, 1, 9, 0},
-			{210, 1, 9, 13},
-			{211, 1, 9, 0},
+			{208, 1, 3, 14},
+			{209, 1, 3, 0},
+			{210, 1, 3, 13},
+			{211, 1, 3, 0},
 			{212, -1, -1, -1},
 			{213, -1, -1, -1},
 			{214, -1, -1, -1},
@@ -267,38 +271,38 @@ public class Tileset {
 			{225, -1, -1, -1},
 			{226, -1, -1, -1},
 			{227, -1, -1, -1},
-			{228, 1, 9, 5},
-			{229, 1, 9, 1},
-			{230, 1, 9, 9},
-			{231, 1, 9, 0},
-			{232, 1, 9, 1},
-			{233, 1, 9, 6},
-			{234, 1, 9, 0},
-			{235, 1, 9, 10},
-			{236, 1, 9, 0},
-			{237, 1, 9, 12},
-			{238, 1, 9, 3},
-			{239, 1, 9, 8},
-			{240, 1, 9, 11},
-			{241, 1, 9, 0},
-			{242, 1, 9, 7},
-			{243, 1, 9, 3},
+			{228, 8, 9, 5},
+			{229, 8, 9, 1},
+			{230, 8, 9, 9},
+			{231, 8, 9, 0},
+			{232, 8, 9, 1},
+			{233, 8, 9, 6},
+			{234, 8, 9, 0},
+			{235, 8, 9, 10},
+			{236, 8, 9, 0},
+			{237, 8, 9, 12},
+			{238, 8, 9, 3},
+			{239, 8, 9, 8},
+			{240, 8, 9, 11},
+			{241, 8, 9, 0},
+			{242, 8, 9, 7},
+			{243, 8, 9, 3},
 			{244, 9, 9, 0},
-			{245, 1, 9, 16},
+			{245, 8, 9, 16},
 			{246, 9, 9, 0},
-			{247, 1, 9, 15},
-			{248, 1, 9, 6},
+			{247, 8, 9, 15},
+			{248, 8, 9, 6},
 			{249, 9, 9, 0},
-			{250, 1, 9, 8},
+			{250, 8, 9, 8},
 			{251, 9, 9, 0},
-			{252, 1, 9, 0},
-			{253, 1, 9, 21},
-			{254, 1, 9, 0},
-			{255, 1, 9, 23},
-			{256, 1, 9, 14},
-			{257, 1, 9, 0},
-			{258, 1, 9, 13},
-			{259, 1, 9, 0},
+			{252, 8, 9, 0},
+			{253, 8, 9, 21},
+			{254, 8, 9, 0},
+			{255, 8, 9, 23},
+			{256, 8, 9, 14},
+			{257, 8, 9, 0},
+			{258, 8, 9, 13},
+			{259, 8, 9, 0},
 			{260, -1, -1, -1},
 			{261, -1, -1, -1},
 			{262, -1, -1, -1},
@@ -311,18 +315,21 @@ public class Tileset {
 			{269, -1, -1, -1}
 	};
 	
-	private void loadImages() {
+	private void loadImages(String path) {
 		
-		for (int i = 0; i < Tileset.NUMBER_OF_TEXTURES; i++) {
-			
-			this.setTexture(i, new Image(getClass().getResourceAsStream("original_" + (i + 1) + ".png")));
+		MPQReader reader = new MPQReader(path);
+		try {
+			reader.readOriginalTextures(this);
+		} catch (IOException | MPQException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
-	public Tileset() {
+	public Tileset(String path) {
 
-		textures = new Image[NUMBER_OF_TEXTURES];
-		loadImages();
+		this.textures = new Image[NUMBER_OF_TEXTURES];
+		loadImages(path);
 	}
 	
 	public Image getTexture(int id) {
@@ -338,8 +345,10 @@ public class Tileset {
 	
 	public void setTexture(int id, Image image) {
 		
-		System.out.println("setting texture " + id);
-		textures[id] = image;
+		System.out.println("setting texture " + id + ": " + image);
+		if (id >= 0 && id < textures.length) {
+			textures[id] = image;
+		}
 	}
 	
 	public int[] getMaskCoordinates(int maskId) {
@@ -364,5 +373,13 @@ public class Tileset {
 		}
 		
 		return tile;
+	}
+
+	public Image getComplete() {
+		return complete;
+	}
+
+	public void setComplete(Image complete) {
+		this.complete = complete;
 	}
 }
