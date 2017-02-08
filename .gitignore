@@ -1,5 +1,6 @@
 /bin/
 /images/
 /masks/
+/build/
 /.gradle/
 /config.properties
