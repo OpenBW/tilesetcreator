@@ -1,26 +1,29 @@
 package org.openbw.mapeditor.gui;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openbw.mapeditor.data.DataLayerException;
 import org.openbw.mapeditor.data.MapReader;
-import org.openbw.mapeditor.data.Tileset;
 import org.openbw.mapeditor.gui.transition.TileTransitionPanel;
+import org.openbw.mapeditor.model.Settings;
+import org.openbw.mapeditor.model.tiles.Tileset;
 import org.openbw.mapeditor.model.tiles.TransitionPreview;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import mpq.MPQException;
 
 public class MainWindow extends Application {
 
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	private static int DEFAULT_HEIGHT = 800;
 	private static int DEFAULT_WIDTH = 1200;
 
@@ -55,8 +58,6 @@ public class MainWindow extends Application {
 //			{64, 32, 32, 0}
 //	};
 	
-	private Properties properties;
-	
 	private Tileset tileset;
 	private TransitionPreview transitionPreview;
 	
@@ -69,44 +70,41 @@ public class MainWindow extends Application {
 		return primaryStage;
 	}
 	
-	private void readProperties() {
-		
-		properties = new Properties();
-		InputStream input = null;
-
-		try {
-			input = new FileInputStream("config.properties");
-		} catch (FileNotFoundException e1) {
-			System.out.println("Could not find property file - creating one...");
-			try {
-				FileOutputStream output = new FileOutputStream("config.properties");
-				input = new FileInputStream("config.properties");
-			} catch (FileNotFoundException e) {
-				System.out.println("Could not create property file.");
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-			properties.load(input);
-			String scdir = properties.getProperty("scdir");
-			
-			if (scdir == null) {
-				
-			}
-			
-			input.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
-	
 	@Override
 	public void start(Stage primaryStage) {
 		
-		readProperties();
-		this.tileset = new Tileset(properties.getProperty("scdir"));
+		LOGGER.debug("application starting...");
+		
+		Settings settings = new Settings();
+		SettingsDialog settingsDialog = new SettingsDialog(settings);
+		
+		if (settings.exists()) {
+			try {
+				settings.load();
+			} catch (DataLayerException e) {
+				e.printStackTrace();
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("File Load Error");
+				alert.setHeaderText("Could not load settings.");
+				alert.setContentText(e.getLocalizedMessage());
+				alert.showAndWait();
+			}
+		} else {
+			settingsDialog.showAndWait("It appears you have not specified any settings yet.\nYou can do so now or open this dialog later\nvia 'File->Settings' or ctrl-P.");
+		}
+		
+		this.tileset = new Tileset(settings);
+		try {
+			this.tileset.load();
+		} catch (DataLayerException e) {
+			e.printStackTrace();
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("File Load Error");
+			alert.setHeaderText("Could not load tileset.");
+			alert.setContentText(e.getLocalizedMessage());
+			alert.showAndWait();
+		}
+		
 		this.transitionPreview = new TransitionPreview();
 		
 		this.primaryStage = primaryStage;
@@ -115,7 +113,7 @@ public class MainWindow extends Application {
 		
 		VBox root1 = new VBox();
 		TileTransitionPanel transitionPanel = new TileTransitionPanel(tileset, transitionPreview);
-		root1.getChildren().addAll(new HeaderPanel(tileset, this), transitionPanel);
+		root1.getChildren().addAll(new HeaderPanel(tileset, settingsDialog, this), transitionPanel);
 		this.transitionScene = new Scene(root1, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		
 		VBox root2 = new VBox();
@@ -123,7 +121,7 @@ public class MainWindow extends Application {
 			this.mapCanvas = new MapCanvas(tileset, new MapReader().readMap(), 128, 128);
 			ScrollPane scrollPane = new ScrollPane();
 			scrollPane.setContent(mapCanvas);
-			root2.getChildren().addAll(new HeaderPanel(tileset, this), scrollPane);
+			root2.getChildren().addAll(new HeaderPanel(tileset, settingsDialog, this), scrollPane);
 			
 		} catch (IOException | MPQException e) {
 			// TODO Auto-generated catch block

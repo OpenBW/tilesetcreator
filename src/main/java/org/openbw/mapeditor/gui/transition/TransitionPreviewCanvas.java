@@ -2,9 +2,9 @@ package org.openbw.mapeditor.gui.transition;
 
 import java.awt.Point;
 
-import org.openbw.mapeditor.data.Tile;
 import org.openbw.mapeditor.gui.ChangeListener;
 import org.openbw.mapeditor.model.tiles.GeneratorConfiguration;
+import org.openbw.mapeditor.model.tiles.Tile;
 import org.openbw.mapeditor.model.tiles.TransitionPreview;
 import org.openbw.mapeditor.tiles.TransitionAlgorithm;
 import org.openbw.mapeditor.tiles.TransitionGenerator;
@@ -35,7 +35,9 @@ public class TransitionPreviewCanvas extends Canvas implements ChangeListener {
 		PixelWriter writer = subImage.getPixelWriter();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				
+				if (writer == null || reader == null) {
+					System.out.println(i + "," + j);
+				}
 				writer.setArgb(i, j, reader.getArgb(x + i, y + j));
 			}
 		}

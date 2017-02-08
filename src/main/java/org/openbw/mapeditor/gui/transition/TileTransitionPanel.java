@@ -1,6 +1,6 @@
 package org.openbw.mapeditor.gui.transition;
 
-import org.openbw.mapeditor.data.Tileset;
+import org.openbw.mapeditor.model.tiles.Tileset;
 import org.openbw.mapeditor.model.tiles.TransitionPreview;
 
 import javafx.scene.layout.BorderPane;

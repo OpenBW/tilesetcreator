@@ -7,6 +7,9 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -18,6 +21,8 @@ import mpq.MPQException;
 
 public class MPQReader {
 
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	private String scdir;
 	
 	public MPQReader(String scdir) {
@@ -36,13 +41,13 @@ public class MPQReader {
 		fstream.close();
 		source.close();
 		
-		System.out.println("extracted file: " + fileName + ". " + retVal + " bytes read.");
+		LOGGER.info("extracted file: " + fileName + ". " + retVal + " bytes read.");
 		buffer.rewind();
 		
 		return buffer;
 	}
 	
-	public void readOriginalTextures(Tileset tileset) throws IOException, MPQException {
+	public WritableImage[] readOriginalTextures() throws IOException, MPQException {
 		
 		ByteBuffer cv5Buffer = extractMpqFile("tileset\\jungle.cv5", scdir);
 		ByteBuffer vx4Buffer = extractMpqFile("tileset\\jungle.vx4", scdir);
@@ -63,11 +68,12 @@ public class MPQReader {
 			
 			for (int i = 0; i < 16; i++) {
 				tiles[i] = cv5Buffer.order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
-//				System.out.println(tiles[i] + " sub index " + i);
 				
 				for (int j = 0; j < 16; j++) {
 					int miniTile = vx4Buffer.order(ByteOrder.LITTLE_ENDIAN).getShort(tiles[i] * 32 + j * 2) & 0xFFFF;
-					boolean flipped = miniTile % 2 == 1;
+					
+					// boolean flipped = miniTile % 2 == 1;
+					
 					for (int k = 0; k < 64; k++) {
 						int wpeReference = (vr4Buffer.get((miniTile >> 1 << 6) + k) & 0xFF) << 2;
 						pixelWriter.setArgb(i * 32 + k % 8 + (j % 4) * 8, index * 32 + k / 8 + (j / 4) * 8, wpeBuffer.getInt(wpeReference) >> 8 | 0xFF000000);
@@ -79,12 +85,12 @@ public class MPQReader {
 			
 		} while (cv5Buffer.remaining() > 0 && index < 28);
 		
-		extractTextures(tilesetImage, tileset);
+		return extractTextures(tilesetImage);
 	}
 	
-	private void extractTextures(WritableImage tilesetImage, Tileset tileset) {
+	private WritableImage[] extractTextures(WritableImage tilesetImage) {
 		
-		tileset.setComplete(tilesetImage);
+		WritableImage[] textures = new WritableImage[14];
 		
 		WritableImage img1 = new WritableImage(64, 64);
 		PixelWriter writer = img1.getPixelWriter();
@@ -93,9 +99,9 @@ public class MPQReader {
 		writer.setPixels(32, 0, 32, 32, reader, 32, 0);
 		writer.setPixels(0, 32, 32, 32, reader, 64, 0);
 		writer.setPixels(32, 32, 32, 32, reader, 96, 0);
-		tileset.setTexture(13, img1);
+		textures[13] = img1;
 		
-		for (int i = 1; i <= 13; i++) {
+		for (int i = 1; i < 14; i++) {
 			
 			WritableImage img = new WritableImage(64, 64);
 			writer = img.getPixelWriter();
@@ -103,7 +109,9 @@ public class MPQReader {
 			writer.setPixels(32, 0, 32, 32, reader, 0, 32 * (i * 2));
 			writer.setPixels(0, 32, 32, 32, reader, 32, 32 * (i * 2 - 1));
 			writer.setPixels(32, 32, 32, 32, reader, 32, 32 * (i * 2));
-			tileset.setTexture(tileset.indexToTile(i * 2, 0).getForegroundTextureId(), img);
+			textures[i - 1] = img;
 		}
+		
+		return textures;
 	}
 }

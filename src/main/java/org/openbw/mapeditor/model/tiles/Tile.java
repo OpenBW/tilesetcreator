@@ -1,4 +1,4 @@
-package org.openbw.mapeditor.data;
+package org.openbw.mapeditor.model.tiles;
 
 public class Tile {
 

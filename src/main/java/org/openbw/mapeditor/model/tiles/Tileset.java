@@ -1,19 +1,21 @@
-package org.openbw.mapeditor.data;
+package org.openbw.mapeditor.model.tiles;
 
-import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openbw.mapeditor.data.DataLayerException;
+import org.openbw.mapeditor.data.TilesetDAO;
+import org.openbw.mapeditor.model.Settings;
 
 import javafx.scene.image.Image;
-import mpq.MPQException;
 
 public class Tileset {
 
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	public static final int NUMBER_OF_TEXTURES = 14;
 	public static String[] TEXTURE_NAMES = {"low-ground empty", "low-ground primary", "low-ground secondary", "low-ground tertiary", "low-ground primary non-buildable", "low-ground secondary non-buildable", "low-ground / primary elevated", "low-ground / primary elevated high", "high-ground / primary", "high-ground / secondary", "high-ground / primary non-buildable", "high-ground / primary elevated", "high-ground / primary elevated high", "creep"};
 	
-	private Image complete;
-	private Image[] textures;
-	
-	private static final int[][] masks = new int[][] {
+	private static final int[][] MASKS = new int[][] {
 		{0, 0, 0, 64, 64},
 		{1, 0, 32, 64, 32},
 		{2, 32, 0, 32, 64},
@@ -42,7 +44,7 @@ public class Tileset {
 		
 	};
 	
-	private static final int[][] mapping = new int[][] {
+	private static final int[][] MAPPING = new int[][] {
 			{0, -1, -1, -1},
 			{1, 13, 13, 0},
 			{2, 2, 2, 0},
@@ -315,21 +317,18 @@ public class Tileset {
 			{269, -1, -1, -1}
 	};
 	
-	private void loadImages(String path) {
-		
-		MPQReader reader = new MPQReader(path);
-		try {
-			reader.readOriginalTextures(this);
-		} catch (IOException | MPQException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	private Image[] textures;
+	private TilesetDAO tilesetDAO;
 	
-	public Tileset(String path) {
+	public Tileset(Settings settings) {
 
 		this.textures = new Image[NUMBER_OF_TEXTURES];
-		loadImages(path);
+		this.tilesetDAO = new TilesetDAO(settings);
+	}
+	
+	public void load() throws DataLayerException {
+		
+		this.tilesetDAO.load(this);
 	}
 	
 	public Image getTexture(int id) {
@@ -345,26 +344,26 @@ public class Tileset {
 	
 	public void setTexture(int id, Image image) {
 		
-		System.out.println("setting texture " + id + ": " + image);
 		if (id >= 0 && id < textures.length) {
+			LOGGER.debug("setting texture " + id + ": size " + image.getWidth() + "x" + image.getHeight());
 			textures[id] = image;
 		}
 	}
 	
 	public int[] getMaskCoordinates(int maskId) {
 	
-		if (maskId < 0 || maskId >= masks.length) {
+		if (maskId < 0 || maskId >= MASKS.length) {
 			maskId = 0;
 		}
-		return masks[maskId];
+		return MASKS[maskId];
 	}
 	
 	public Tile indexToTile(int index, int subIndex) {
 		
 		Tile tile = null;
 		
-		if (index < mapping.length) {
-			tile = new Tile(mapping[index][1], mapping[index][2], mapping[index][3]);
+		if (index < MAPPING.length) {
+			tile = new Tile(MAPPING[index][1], MAPPING[index][2], MAPPING[index][3]);
 		}
 		
 		// simplify: just use plain tile instead of doodad tiles.
@@ -373,13 +372,5 @@ public class Tileset {
 		}
 		
 		return tile;
-	}
-
-	public Image getComplete() {
-		return complete;
-	}
-
-	public void setComplete(Image complete) {
-		this.complete = complete;
 	}
 }

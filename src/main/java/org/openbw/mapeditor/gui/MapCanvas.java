@@ -2,8 +2,8 @@ package org.openbw.mapeditor.gui;
 
 import java.awt.Point;
 
-import org.openbw.mapeditor.data.Tile;
-import org.openbw.mapeditor.data.Tileset;
+import org.openbw.mapeditor.model.tiles.Tile;
+import org.openbw.mapeditor.model.tiles.Tileset;
 import org.openbw.mapeditor.tiles.TransitionAlgorithm;
 import org.openbw.mapeditor.tiles.TransitionAlgorithm.Algorithm;
 import org.openbw.mapeditor.tiles.TransitionGenerator;

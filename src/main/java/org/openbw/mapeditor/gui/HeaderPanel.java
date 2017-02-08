@@ -3,7 +3,7 @@ package org.openbw.mapeditor.gui;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import org.openbw.mapeditor.data.Tileset;
+import org.openbw.mapeditor.model.tiles.Tileset;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,11 +30,13 @@ import javafx.stage.Stage;
 public class HeaderPanel extends VBox {
 
 	private Tileset tileset;
+	private SettingsDialog settingsDialog;
 	private MainWindow mainWindow;
 	
-	public HeaderPanel(Tileset tileset, MainWindow mainWindow) {
+	public HeaderPanel(Tileset tileset, SettingsDialog settingsDialog, MainWindow mainWindow) {
 		
 		this.tileset = tileset;
+		this.settingsDialog = settingsDialog;
 		this.mainWindow = mainWindow;
 		
 		this.getChildren().add(createMenuBar(mainWindow.getStage()));
@@ -66,6 +68,7 @@ public class HeaderPanel extends VBox {
 						mainWindow.update();
 					} catch (MalformedURLException e) {
 						// ignore
+						e.printStackTrace();
 					}
 				}
 			}
@@ -87,10 +90,11 @@ public class HeaderPanel extends VBox {
             }
         });
         MenuItem item2 = new MenuItem("Settings");
+        item2.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
         item2.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 
-            	// TODO action
+            	settingsDialog.showAndWait();
             }
         });
         MenuItem item3 = new MenuItem("Exit");
